@@ -424,7 +424,7 @@ class UPnP::Control::Service
   # Returns true for this service's actions as well as the usual behavior
 
   def respond_to?(message)
-    @driver.methods(false).include? message.to_s || super
+    @driver.methods(false).include? message || super
   end
 
   ##
