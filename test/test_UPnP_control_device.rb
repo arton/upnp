@@ -25,7 +25,7 @@ class TestUPnPControlDevice < UPnP::TestCase
     igd = UPnP::Control::Device::InternetGatewayDevice
 
     assert_equal igd, device.class
-    assert igd.constants.include?('URN_1'), 'URN_1 constant missing'
+    assert igd.constants.include?(:URN_1), 'URN_1 constant missing'
     assert_equal "#{UPnP::DEVICE_SCHEMA_PREFIX}:#{igd.name}:1", igd::URN_1
   ensure
     UPnP::Control::Device.send :remove_const, :InternetGatewayDevice
