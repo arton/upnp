@@ -37,6 +37,12 @@ require 'UPnP'
 class UPnP::UUID
 
   ##
+  # UUID Error class
+
+  class Error < UPnP::Error
+  end
+
+  ##
   # File holding the NIC MAC address
 
   NIC_FILE = '~/.UPnP/uuid_mac_address'
