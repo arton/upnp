@@ -73,7 +73,7 @@ module UPnP
 
   class TestCase < Test::Unit::TestCase
 
-    undef_method :default_test
+    undef_method :default_test if respond_to? :default_test
 
     def setup
       @tempdir = File.join Dir.tmpdir, "test_UPnP_#{$$}"
