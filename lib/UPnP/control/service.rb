@@ -402,10 +402,10 @@ class UPnP::Control::Service
       data_type = Types::MAP[var.at('dataType').text.strip]
       default = var.at 'defaultValue'
 
-      if default then
+      if default && default.txt then
         default = default.text.strip
         raise Error, "insecure default value #{default}" unless
-          default =~ /\A\w*\z/
+          default =~ /\A[\w:]*\z/
       end
 
       allowed_value_list  = parse_allowed_value_list var
