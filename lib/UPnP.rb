@@ -1,7 +1,6 @@
-$KCODE = 'u'
+# coding: utf-8
 
 require 'rubygems'
-gem 'soap4r'
 
 ##
 # An implementation of the Universal Plug and Play protocol.
