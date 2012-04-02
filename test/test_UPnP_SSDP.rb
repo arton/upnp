@@ -46,8 +46,8 @@ class TestUPnPSSDP < UPnP::TestCase
 
     ttl = [@ssdp.ttl].pack 'i'
     expected = [
-      [Socket::IPPROTO_IP, Socket::IP_ADD_MEMBERSHIP, "\357\377\377\372\000\000\000\000"],
-      [Socket::IPPROTO_IP, Socket::IP_MULTICAST_LOOP, "\000"],
+      [Socket::IPPROTO_IP, Socket::IP_ADD_MEMBERSHIP, "\357\377\377\372\0\0\0\0"],
+      [Socket::IPPROTO_IP, Socket::IP_MULTICAST_LOOP, "\0"],
       [Socket::IPPROTO_IP, Socket::IP_MULTICAST_TTL, ttl],
       [Socket::IPPROTO_IP, Socket::IP_TTL, ttl],
     ]
@@ -286,10 +286,8 @@ ST: bunnies\r
   def test_stop_listening
     thread = Thread.new do sleep end
     @ssdp.listener = thread
-
     @ssdp.stop_listening
-
-    assert_equal false, thread.alive?
+    assert ['aborting', false].include?(thread.status)
     assert_equal nil, @ssdp.listener
   end
 
