@@ -10,7 +10,7 @@ Hoe.spec 'UPnP' do
   developer 'Eric Hodel', 'drbrain@segment7.net'
 
   extra_deps << ['nokogiri', '~> 1.3']
-  extra_deps << 'soap4r'
+  extra_deps << ['soap4r']
 end
 
 # vim: syntax=Ruby
