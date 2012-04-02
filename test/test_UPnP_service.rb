@@ -31,8 +31,8 @@ class TestUPnPService < UPnP::TestCase
   def test_actions
     expected = {
       'TestAction' => [
-        %w[in  TestInput  TestInVar],
-        %w[out TestOutput TestOutVar],
+        [:in, 'TestInput', 'TestInVar'],
+        [:out, 'TestOutput', 'TestOutVar'],
       ],
     }
 
@@ -140,11 +140,11 @@ class TestUPnPService < UPnP::TestCase
   </actionList>
   <serviceStateTable>
     <stateVariable sendEvents="no">
-      <name>TestOutVar</name>
+      <name>TestInVar</name>
       <dataType>string</dataType>
     </stateVariable>
     <stateVariable sendEvents="no">
-      <name>TestInVar</name>
+      <name>TestOutVar</name>
       <dataType>string</dataType>
     </stateVariable>
   </serviceStateTable>
