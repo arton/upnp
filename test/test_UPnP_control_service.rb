@@ -35,7 +35,7 @@ class TestUPnPControlService < UPnP::TestCase
       GetStatusInfo
       RequestConnection
       SetConnectionType
-    ]
+    ].map {|m| m.to_sym}
   end
 
   def test_self_create
@@ -44,7 +44,7 @@ class TestUPnPControlService < UPnP::TestCase
     l3f = UPnP::Control::Service::Layer3Forwarding
     assert_equal l3f, device.class
 
-    assert l3f.constants.include?('URN_1'), 'URN_1 constant missing'
+    assert l3f.constants.include?(:URN_1), 'URN_1 constant missing'
     assert_equal "#{UPnP::SERVICE_SCHEMA_PREFIX}:#{l3f.name}:1", l3f::URN_1
   ensure
     UPnP::Control::Service.send :remove_const, :Layer3Forwarding
@@ -87,11 +87,9 @@ class TestUPnPControlService < UPnP::TestCase
     service = UPnP::Control::Service.create @service_description, @url
 
     assert_equal @methods, service.driver.methods(false).sort
-
     registry = service.driver.mapping_registry
-
     klass_def = registry.elename_schema_definition_from_class SOAP::SOAPString
-    assert_equal 'NewPossibleConnectionTypes', klass_def.elename.name
+    assert_equal 'NewPortMappingDescription', klass_def.elename.name
 
     new_protocol = XSD::QName.new nil, 'NewProtocol'
     mapping = registry.schema_definition_from_elename new_protocol
