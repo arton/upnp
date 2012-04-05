@@ -407,7 +407,7 @@ class UPnP::Control::Service
       data_type = Types::MAP[var.at('dataType').text.strip]
       default = var.at 'defaultValue'
 
-      if default && default.txt then
+      if default && default.text then
         default = default.text.strip
         raise Error, "insecure default value #{default}" unless
           default =~ VALUE_PATTERN
