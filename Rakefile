@@ -3,6 +3,11 @@
 require 'rubygems'
 require 'hoe'
 
+path = ENV['PATH'].split(File::PATH_SEPARATOR)
+unless path.include? '/sbin'
+  ENV['PATH'] = "#{ENV['PATH']}#{File::PATH_SEPARATOR}/sbin"
+end
+
 Hoe.plugin :perforce
 
 Hoe.spec 'UPnP' do
