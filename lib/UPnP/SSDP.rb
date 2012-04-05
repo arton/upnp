@@ -646,7 +646,7 @@ class UPnP::SSDP
 
     responses = []
     responses << @queue.pop until @queue.empty?
-    responses
+    responses.find_all { |adv| Response === adv }
   ensure
     stop_listening
     @socket.close if @socket and not @socket.closed?
