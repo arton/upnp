@@ -148,6 +148,11 @@ class UPnP::Control::Service
   end
 
   ##
+  # value permitted chars
+
+  VALUE_PATTERN = /\A[-\w:]*\z/
+
+  ##
   # Hash mapping UPnP Actions to arguments
   #
   #   {
@@ -347,7 +352,7 @@ class UPnP::Control::Service
 
     list.css('allowedValue').each do |value|
       value = value.text.strip
-      raise Error, "insecure allowed value #{value}" unless value =~ /\A\w*\z/
+      raise Error, "insecure allowed value #{value}" unless value =~ VALUE_PATTERN
       values << value
     end
 
@@ -405,7 +410,7 @@ class UPnP::Control::Service
       if default && default.txt then
         default = default.text.strip
         raise Error, "insecure default value #{default}" unless
-          default =~ /\A[\w:]*\z/
+          default =~ VALUE_PATTERN
       end
 
       allowed_value_list  = parse_allowed_value_list var
