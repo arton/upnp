@@ -1,8 +1,27 @@
 require 'open-uri'
 require 'uri'
 
-require 'nokogiri'
-
+module UPnP::XMLDocument
+  begin
+    require 'nokogiri'
+    Element = Nokogiri::XML::Element
+    def self.from(url)
+      Nokogiri::XML open(url)
+    end
+    def self.at(e, a)
+      e.at(a.join(' > '))
+    end
+  rescue LoadError
+    require 'rexml/document'
+    Element = REXML::Element
+    def self.from(xml)
+      REXML::Document.new open(xml)
+    end
+    def self.at(e, a)
+      e.elements[a.join('/')]
+    end
+  end
+end
 require 'UPnP'
 require 'UPnP/SSDP'
 require 'UPnP/control/service'
@@ -115,10 +134,10 @@ class UPnP::Control::Device
   # used.
 
   def self.create(device_url)
-    description = Nokogiri::XML open(device_url)
+    description = UPnP::XMLDocument.from(device_url)
     url = device_url + '/'
 
-    type = description.at('root > device > deviceType').text
+    type = UPnP::XMLDocument.at(description, %w'root device deviceType').text
     klass_name = type.sub(/#{UPnP::DEVICE_SCHEMA_PREFIX}:([^:]+):.*/, '\1')
 
     begin
@@ -128,7 +147,7 @@ class UPnP::Control::Device
       klass.const_set :URN_1, "#{UPnP::DEVICE_SCHEMA_PREFIX}:#{klass.name}:1"
     end
 
-    klass.new description.at('root > device'), url
+    klass.new UPnP::XMLDocument.at(description, %w'root device'), url
   end
 
   ##
@@ -161,22 +180,19 @@ class UPnP::Control::Device
 
     @services = []
     @sub_services = []
-
     case device
     when URI::Generic then
-      description = Nokogiri::XML open(device)
-
-      @url = description.at 'root > URLBase'
+      description = UPnP::XMLDocument.from(device)
+      @url = UPnP::XMLDocument.at(description, %w'root URLBase')
       @url = @url ? URI.parse(@url.text.strip) : device + '/'
-
-      device = parse_device description.at('root > device')
-    when Nokogiri::XML::Element then
-      raise ArgumentError, 'url not provided with Nokogiri::XML::Element' if
+      parse_device UPnP::XMLDocument.at(description, %w'root device')
+    when UPnP::XMLDocument::Element then
+      raise ArgumentError, "url not provided with #{UPnP::XMLDocument::Element}" if
         url.nil?
       @url = url
       parse_device device
     else
-      raise ArgumentError, 'must be a URI or a Nokogiri::XML::Element'
+      raise ArgumentError, "must be a URI or a #{UPnP::XMLDocument::Element}"
     end
   end
 
@@ -185,37 +201,37 @@ class UPnP::Control::Device
   # attributes, sub-devices and sub-services
 
   def parse_device(description)
-    @friendly_name = description.at('friendlyName').text.strip
+    @friendly_name = UPnP::XMLDocument.at(description, %w'friendlyName').text.strip
 
-    @manufacturer = description.at('manufacturer').text.strip
+    @manufacturer = UPnP::XMLDocument.at(description, %w'manufacturer').text.strip
 
-    manufacturer_url = description.at('manufacturerURL')
+    manufacturer_url = UPnP::XMLDocument.at(description, %w'manufacturerURL')
     @manufacturer_url = URI.parse manufacturer_url.text.strip if
       manufacturer_url
 
-    model_description = description.at 'modelDescription'
+    model_description = UPnP::XMLDocument.at(description, %w'modelDescription')
     @model_description = model_description.text.strip if model_description
 
-    @model_name = description.at('modelName').text.strip
+    @model_name = UPnP::XMLDocument.at(description, %w'modelName').text.strip
 
-    model_number = description.at 'modelNumber'
+    model_number = UPnP::XMLDocument.at(description, %w'modelNumber')
     @model_number = model_number.text.strip if model_number
 
-    model_url = description.at 'modelURL'
+    model_url = UPnP::XMLDocument.at(description, %w'modelURL')
     @model_url = URI.parse model_url.text.strip if model_url
 
-    @name = description.at('UDN').text.strip
+    @name = UPnP::XMLDocument.at(description, %w'UDN').text.strip
 
-    presentation_url = description.at 'presentationURL'
+    presentation_url = UPnP::XMLDocument.at(description, %w'presentationURL')
     @presentation_url = URI.parse presentation_url.text.strip if
       presentation_url
 
-    serial_number = description.at 'serialNumber'
+    serial_number = UPnP::XMLDocument.at(description, %w'serialNumber')
     @serial_number = serial_number.text.strip if serial_number
 
-    @type = description.at('deviceType').text.strip
+    @type = UPnP::XMLDocument.at(description, %w'deviceType').text.strip
 
-    upc = description.at 'UPC'
+    upc = UPnP::XMLDocument.at(description, ['UPC'])
     @upc = upc.text.strip if upc
 
     sub_devices = description.xpath './xmlns:deviceList/xmlns:device'

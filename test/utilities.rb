@@ -27,6 +27,11 @@ module UPnP
     include UPnP::OpenStub
   end
 
+  module XMLDocument
+    extend UPnP::OpenStub
+    include UPnP::OpenStub
+  end
+
   class Control::Service
     extend UPnP::OpenStub
     include UPnP::OpenStub
